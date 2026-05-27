@@ -120,6 +120,8 @@ nav{
   display:flex; align-items:center; justify-content:space-between;
   z-index:100;
   transition:all 0.4s ease;
+  background:rgba(190, 182, 164, 0.72);
+backdrop-filter:blur(18px);
 }
 .nav-logo{
   font-family:var(--font-display); font-size:14px; font-weight:700;
@@ -142,12 +144,12 @@ nav{
 .nav-cta{
   font-family:var(--font-mono); font-size:10px; letter-spacing:0.18em;
   text-transform:uppercase; color:var(--cyan); text-decoration:none;
-  border:1px solid rgba(0,212,255,0.35); padding:10px 22px;
+  border:1px solid rgb(251, 251, 251); padding:10px 22px;
   transition:all 0.3s ease; background:transparent;
 }
-.nav-cta:hover{ background:rgba(0,212,255,0.08); border-color:var(--cyan); box-shadow:0 0 20px var(--cyan-glow); }
+.nav-cta:hover{ background:rgba(184, 189, 190, 0.08); border-color:var(--cyan); box-shadow:0 0 20px var(--cyan-glow); }
 
-/* HERO */
+
 /* HERO */
 #hero{
   min-height:100vh;
@@ -172,55 +174,9 @@ nav{
   width:100%;
   height:100%;
   opacity:0.75;
-}
+  pointer-events:none;
+}  
 
-/* DIAGONAL LINES */
-.diag-line{
-  position:absolute;
-  width:1px;
-  background:var(--blue);
-  opacity:0.3;
-  transform-origin:top;
-  z-index:1;
-}
-
-/* HERO IMAGE */
-.hero-center{
-  position:relative;
-  z-index:2;
-
-  animation:heroFloat 5s ease-in-out infinite alternate;
-}
-
-.hero-center .photo-container{
-  width:100%;
-  max-width:420px;
-  margin:auto;
-  
-}
-
-.hero-center .photo-img{
-  width:100%;
-  height:720px;
-
-  object-fit:cover;
-  object-position:top center;
-
-  border-radius:28px;
-
-  box-shadow:
-    0 40px 80px rgba(0,0,0,0.14);
-
-  transition:
-    transform 0.6s ease,
-    box-shadow 0.6s ease;
-}
-.hero-center:hover .photo-img{
-  transform:scale(1.03);
-
-  box-shadow:
-    0 50px 100px rgba(0,0,0,0.18);
-}
 
 @keyframes heroFloat{
 
@@ -277,16 +233,48 @@ nav{
   opacity:0.95;
 }
 .hero-sub{
-  margin-top:44px; display:flex; align-items:flex-end;
-  justify-content:space-between; z-index:2; position:relative;
+
+  margin-top:44px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:48px;
+
+  flex-wrap:wrap;
+
+  position:relative;
+
+  z-index:2;
 }
 .hero-role{
-  font-size:clamp(13px,1.1vw,16px); font-weight:300; color:#4f4a43;
-  max-width:300px; line-height:1.8; opacity:0; transform:translateY(16px);
+
+  font-size:clamp(13px,1.1vw,16px);
+
+  font-weight:300;
+
+  color:#4f4a43;
+
+  max-width:320px;
+
+  line-height:1.8;
+
+  opacity:0;
+
+  transform:translateY(16px);
 }
 .hero-ctas{
-  display:flex; gap:14px; align-items:center;
-  opacity:0; transform:translateY(16px);
+
+  display:flex;
+
+  gap:16px;
+
+  align-items:center;
+
+  flex-wrap:wrap;
+
+  opacity:0;
 }
 .btn-primary{
   font-family:var(--font-mono); font-size:10px; letter-spacing:0.16em;
@@ -843,8 +831,44 @@ footer{
 
 /* MOBILE */
 @media(max-width:768px){
+
   nav{ padding:20px 24px; }
-  .nav-links{ display:none; }
+
+  .nav-links{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  #hero{
+    grid-template-columns:1fr;
+    gap:40px;
+    padding:120px 24px 60px;
+  }
+
+  .hero-title{
+    font-size:clamp(54px,18vw,90px);
+  }
+
+  .hero-sub{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:24px;
+  }
+
+  .hero-ctas{
+    width:100%;
+  }
+
+  .btn-primary,
+  .btn-ghost{
+    flex:1;
+    text-align:center;
+  }
+
+  .hero-scroll{
+    display:none;
+  }
   #hero{ padding:0 24px 56px; }
   .hero-scroll{ right:24px; }
   #about{ grid-template-columns:1fr; padding:80px 24px; gap:48px; }
@@ -920,68 +944,32 @@ footer{
     <div class="line"><span><em>Digital</em></span></div>
     <div class="line"><span>Futures.</span></div>
   </div>
-
+    
   <div class="hero-sub">
 
-    <div class="hero-role" id="heroRole">
-      Crafting scalable, high-performance web experiences.<br/>
-      Turning ideas into immersive digital realities.
-    </div>
+  <div class="hero-role" id="heroRole">
+    Crafting scalable, high-performance web experiences.<br/>
+    Turning ideas into immersive digital realities.
+  </div>
 
-    
+  <div class="hero-ctas" id="heroCtas">
+
+    <a href="https://e-commerce-website-nine-ochre.vercel.app/#"
+       target="_blank"
+       class="btn-primary">
+       View Work
+    </a>
+
+    <a href="#contact"
+       class="btn-ghost">
+       Get in Touch
+    </a>
+
   </div>
 
 </div>
 
-
-<div class="hero-center">
-
-  <div class="photo-container">
-
-    <div class="photo-glow"></div>
-
-    <div class="hero-center"></div>
-
-  </div>
-
 </div>
-
-
-<div class="hero-right">
-
-  <div class="section-label">
-    Who I Am
-  </div>
-
-  <h2 class="about-headline">
-    Engineering precision with<br/>
-    <em>creative soul.</em>
-  </h2>
-
-  <p class="about-body">
-    I'm Siva Pujari — a Full Stack Developer and AI & ML student building modern digital experiences with clean engineering and cinematic design.
-  </p>
-
-  <div class="about-stats">
-
-    <div class="stat-item">
-      <div class="stat-num">2+</div>
-      <div class="stat-label">Internships</div>
-    </div>
-
-    <div class="stat-item">
-      <div class="stat-num">4+</div>
-      <div class="stat-label">Certifications</div>
-    </div>
-
-  </div>
-
-</div>
-    <div class="hero-ctas" id="heroCtas">
-      <a href="#projects" class="btn-primary">View Work</a>
-      <a href="#contact" class="btn-ghost">Get in Touch</a>
-    </div>
-  </div>
   <div class="hero-scroll" id="heroScroll">
     <div class="scroll-line"></div>
     Scroll
@@ -1012,6 +1000,7 @@ footer{
 
 <!-- ABOUT -->
 <section id="about">
+  
   <div class="about-left">
     <div class="section-label reveal">Who I Am</div>
     <h2 class="about-headline reveal reveal-delay-1">
@@ -1368,7 +1357,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('mainNav');
   if(window.scrollY>60){
-    nav.style.cssText='background:rgba(6,8,16,0.88);backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,212,255,0.07);padding:18px 52px;';
+  nav.style.cssText='background:rgba(244,241,234,0.72);backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,0,0,0.06);padding:18px 52px;';
   } else {
     nav.style.cssText='padding:26px 52px;';
   }
