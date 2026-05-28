@@ -10,9 +10,9 @@
 :root {
 
   /* BACKGROUNDS */
-  --bg: #f4f1ea;
-  --bg2: #e8e1d5;
-  --bg3: #dcd2c3;
+--bg: #8f6de4;
+--bg2: #17cbbc;
+--bg3: #d8cbb8;
 
   /* DARK TEXT */
   --navy: #171717;
@@ -166,7 +166,23 @@ backdrop-filter:blur(18px);
   position:relative;
   overflow:hidden;
 }
+.hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transform:translateX(30px);
+  opacity:0.95;
+}
 
+#neuralCanvas {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 620px;
+  filter:
+drop-shadow(0 0 40px rgba(180,140,255,0.22))
+drop-shadow(0 0 80px rgba(255,255,255,0.08));
+}
 /* HERO CANVAS */
 #heroCanvas{
   position:absolute;
@@ -938,11 +954,13 @@ footer{
   <div class="hero-eyebrow" id="heroEyebrow">
     Full Stack Developer — AI & ML Engineer
   </div>
+  
 
   <div class="hero-title" id="heroTitle">
     <div class="line"><span>Building</span></div>
     <div class="line"><span><em>Digital</em></span></div>
     <div class="line"><span>Futures.</span></div>
+  
   </div>
     
   <div class="hero-sub">
@@ -970,7 +988,11 @@ footer{
 </div>
 
 </div>
+<div class="hero-right">
+  <canvas id="neuralCanvas"></canvas>
+</div>
   <div class="hero-scroll" id="heroScroll">
+    
     <div class="scroll-line"></div>
     Scroll
   </div>
@@ -1357,11 +1379,164 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('mainNav');
   if(window.scrollY>60){
-  nav.style.cssText='background:rgba(244,241,234,0.72);backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,0,0,0.06);padding:18px 52px;';
+  nav.style.cssText='background:rgba(244,241,234,0.72);backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,0,0,0.06);padding:14px 20px;';
   } else {
-    nav.style.cssText='padding:26px 52px;';
+    nav.style.cssText='padding:16px 20px;';
   }
 });
+</script>
+<script>
+(function () {
+  const canvas = document.getElementById('neuralCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const SKILLS = ['React', 'Node.js', 'Python', 'MongoDB', 'TypeScript', 'Docker', 'AWS', 'Next.js', 'AI / ML', 'FastAPI'];
+  const COLORS = ['#00D4FF', '#2D6CDF', '#9B6DFF', '#00D4FF', '#2D6CDF', '#9B6DFF', '#00D4FF', '#2D6CDF', '#9B6DFF', '#00D4FF'];
+
+  let W, H, CX, CY, R;
+
+  function resize() {
+    const size = Math.min(canvas.parentElement.clientWidth || 490, 490);
+    canvas.width = W = size;
+    canvas.height = H = size;
+    CX = W / 2; CY = H / 2; R = size * 0.37;
+  }
+
+  const TOTAL = 30;
+  const nodes = Array.from({ length: TOTAL }, (_, i) => {
+    const phi   = Math.acos(1 - 2 * (i + 0.5) / TOTAL);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    return {
+      x: Math.sin(phi) * Math.cos(theta),
+      y: Math.sin(phi) * Math.sin(theta),
+      z: Math.cos(phi),
+      label:      i < SKILLS.length ? SKILLS[i] : null,
+      color:      COLORS[i % COLORS.length],
+      r:          i < SKILLS.length ? 4.5 : 2.5,
+      phase:      Math.random() * Math.PI * 2,
+      phaseSpeed: 0.012 + Math.random() * 0.018
+    };
+  });
+
+  const edges = [];
+  for (let i = 0; i < TOTAL; i++) {
+    for (let j = i + 1; j < TOTAL; j++) {
+      const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y, nodes[i].z - nodes[j].z);
+      if (d < 0.75) edges.push({ i, j, t: Math.random(), speed: 0.003 + Math.random() * 0.004, active: Math.random() > 0.45 });
+    }
+  }
+
+  let rotY = 0;
+  const rotX = 0.28;
+
+  function project(x, y, z) {
+    const cy = Math.cos(rotY), sy = Math.sin(rotY);
+    const cx = Math.cos(rotX), sx = Math.sin(rotX);
+    const rx =  x * cy - z * sy;
+    let   rz =  x * sy + z * cy;
+    const ry =  y * cx - rz * sx;
+    rz        =  y * sx + rz * cx;
+    const s  = 2.8 / (2.8 + rz);
+    return { px: CX + rx * R * s, py: CY + ry * R * s, pz: rz, s };
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); return; }
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);  ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);  ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);      ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    rotY += 0.0012;
+    nodes.forEach(n => (n.phase += n.phaseSpeed));
+
+    const proj = nodes.map(n => ({ ...project(n.x, n.y, n.z), n }));
+
+    edges.forEach(e => {
+      const a = proj[e.i], b = proj[e.j];
+      const alpha = Math.max(0, ((a.pz + b.pz) / 2 + 1) * 0.2);
+      if (alpha < 0.01) return;
+
+      ctx.beginPath();
+      ctx.moveTo(a.px, a.py);
+      ctx.lineTo(b.px, b.py);
+    ctx.strokeStyle = `rgba(180,140,255,${alpha * 1.4})`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      if (e.active) {
+        e.t = (e.t + e.speed) % 1;
+        ctx.beginPath();
+        ctx.arc(a.px + (b.px - a.px) * e.t, a.py + (b.py - a.py) * e.t, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha * 3})`;
+        ctx.fill();
+      }
+    });
+
+    proj.sort((a, b) => a.pz - b.pz).forEach(({ px, py, pz, s, n }) => {
+      const vis = Math.max(0, (pz + 1) * 0.5);
+      if (vis < 0.04) return;
+
+      const nr = n.r * s * (1 + Math.sin(n.phase) * 0.28);
+
+      if (n.label) {
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, nr * 4.5);
+        glow.addColorStop(0, n.color + '88');
+        glow.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(px, py, nr * 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(px, py, nr, 0, Math.PI * 2);
+      const g = ctx.createRadialGradient(px - nr * 0.3, py - nr * 0.3, 0, px, py, nr);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(1, n.label ? n.color : 'rgba(80,130,220,0.6)');
+      ctx.globalAlpha = vis;
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      if (n.label && pz > -0.25) {
+        const la = Math.max(0, (pz + 0.25) * 1.1);
+        const fs = Math.max(8, Math.round(10.5 * s));
+        ctx.font = `500 ${fs}px Inter, sans-serif`;
+        const tw  = ctx.measureText(n.label).width;
+        const pad = 5, lh = fs + 8;
+        const lx  = px - tw / 2 - pad;
+        const ly  = py + nr * 1.9;
+
+        ctx.globalAlpha = la;
+        roundRect(lx, ly, tw + pad * 2, lh, lh / 2);
+        ctx.fillStyle = 'rgba(6,10,24,0.88)';
+        ctx.fill();
+        ctx.strokeStyle = n.color + '88';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        ctx.fillStyle = '#c8dcff';
+        ctx.textAlign = 'center';
+        ctx.fillText(n.label, px, ly + lh - 4);
+        ctx.globalAlpha = 1;
+      }
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  draw();
+})();
 </script>
 </body>
 </html>
